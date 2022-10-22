@@ -23,7 +23,6 @@ void niaga_sedang();
 void niaga_besar();
 void penutup ();
 int ulang();
-void penutup();
 
 void close(){
     printf("\n\tBerikutnya");
