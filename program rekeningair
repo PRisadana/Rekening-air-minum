@@ -24,7 +24,6 @@ void niaga_besar();
 void penutup ();
 int ulang();
 void penutup();
-void kembali();
 
 void close(){
     printf("\n\tBerikutnya");
