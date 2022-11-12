@@ -1,0 +1,1540 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <math.h>
+
+/*Program ini akan menghitung jumlah tagihan rekening air minum,
+dengan cara user memilih jenis golongan dan sumber daya listrik yang digunakan.
+Pelanggan akan terkena denda jika membayar diatas tanggal 15 dengan kondisi (Jika pemakaian > 100 m^3 (2000*pemakaian), tapi jika 10<=pemakaian<=100 (1000*pemakaian))
+Output akan berisi data data tagihan dan golongan dari pelanggan tersebut*/
+
+#define administrasi 5000
+
+int main();
+void golonganpengguna();
+void close();
+void mulai();
+void rumahtangga();
+void non_niaga_bersubsidi();
+void non_niaga_tanpa_bersubsidi();
+void rumah_tangga_b();
+void cetaknonniagabersubsidi(int pilihukuranjalan, int pilihdayalistrik, char nama[50], float tanggal, int dayalistrik[2], float pemakaian, int biayaadministrasi, int bpmrt, int denda, float tarifperkubik, float biayapemakaian );
+void cetaknonniagatanpabersubsidi(int pilihukuranjalan, int pilihdayalistrik, char nama[50], float tanggal, char dayalistrik[2] [6], float pemakaian, int biayaadministrasi, int bpmrt, int denda, float tarifperkubik, float biayapemakaian);
+void cetakrumahtanggab(int pilihdayalistrik, char nama[50], float tanggal, char dayalistrik[4] [6], float pemakaian, int biayaadministrasi, int bpmrt, int denda, float tarifperkubik, float biayapemakaian);
+void usaha();
+void niaga_kecil();
+void cetakniagakecil(char golongan [4] [6], int pilih, char nama[50], float tanggal, char dayalistrik[4] [6],float pemakaian, int biayadministrasi, int bpmu, int denda, float tarifperkubik, float biayapemakaian);
+void niaga_sedang();
+void cetakniagasedang(char golongan [4] [6], int pilih, char nama[50], float tanggal, char dayalistrik[4] [6],float pemakaian, int biayadministrasi, int bpmu, int denda, float tarifperkubik, float biayapemakaian);
+void niaga_besar();
+void cetakniagabesar(char golongan [4] [6], int pilih, char nama[50], float tanggal, char dayalistrik[4] [6],float pemakaian, int biayadministrasi, int bpmu, int denda, float tarifperkubik, float biayapemakaian);
+void penutup ();
+void ulang();
+
+void close(){
+    printf("\n\tBerikutnya");
+    getchar();
+    printf("\n\tTekan enter untuk melanjutkan...");
+    getchar();
+    system("clear");
+}
+
+void mulai(){
+    printf("\n\t~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+    printf("\n\t||            Algoritma dan Pemrograman            ||");
+    printf("\n\t~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+    printf("\n\t~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+    printf("\n\t|| Made Abdy Arysada  2205551043                   ||");
+    printf("\n\t|| Resandy Prisadana  2205551050                   ||");
+    printf("\n\t~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+}
+
+void ulang(){
+    int menu;
+    printf ("\n\t========================================================");
+    printf ("\n\t||        Apakah anda ingin mengulang program         ||");
+    printf ("\n\t========================================================");
+    printf ("\n\t(1) Ya, saya ingin menghitung kembali                   ");
+    printf ("\n\t(2) Tidak, sudah selesai                                ");
+    printf ("\n\t========================================================");
+    printf ("\n\tMasukkan angka untuk memilih  :  ");
+    while (scanf  ("%d", &menu)==0 || menu<1 || menu>2){
+        printf ("\t---------------------------------------");
+        printf ("\n\tKarakter yang anda inputkan salah");
+        printf ("\n\tSilahkan inputkan ulang");
+        printf ("\n\t---------------------------------------");
+        printf ("\n\tMasukkan angka untuk memilih   : ");
+        while (menu=getchar() != '\n');
+    }
+
+    if (menu==1){
+        close();
+        main();
+    }else if (menu==2){
+        close();
+        penutup();
+    }
+}
+
+void penutup (){
+    printf ("\n\t========================================================");
+    printf ("\n\t||    Terima kasih telah menggunakan layanan kami     ||");
+    printf ("\n\t||              Salam Hangat Dari Kami                ||");
+    printf ("\n\t========================================================");
+    printf ("\n\t========================================================");
+    printf ("\n\t||                 CV. KADITA WATER                   ||");
+    printf ("\n\t========================================================");
+    printf ("\n\t||             Air Jernih Gak Bikin Risih             ||");
+    printf ("\n\t========================================================");
+}
+
+void usaha(){
+    int menu;
+    printf("\n\t~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+    printf("\n\t||             Golongan Pengguna Usaha             ||");
+    printf("\n\t~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+    printf("\n\t~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+    printf("\n\t|| (1) Niaga Kecil                                 ||");
+    printf("\n\t|| (2) Niaga Sedang                                ||");
+    printf("\n\t|| (3) Niaga Besar                                 ||");
+    printf("\n\t~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+    printf("\n\t|| (0) Kembali ke golongan pengguna                ||");
+    printf("\n\t~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+    printf("\n\tMasukkan golongan Pengguna : ");
+    while (scanf  ("%d", &menu)==0 || menu<0 || menu>3){
+        printf ("\t---------------------------------------");
+        printf ("\n\tKarakter yang anda inputkan salah");
+        printf ("\n\tSilahkan inputkan ulang");
+        printf ("\n\t---------------------------------------");
+        printf("\n\tMasukkan golongan Pengguna : ");
+        while (menu=getchar() != '\n');
+    }
+    close();
+
+    if (menu == 1){
+        niaga_kecil();
+    }else if (menu == 2){
+        niaga_sedang();
+    }else if (menu == 3){
+        niaga_besar();
+    }else if(menu==0){
+        golonganpengguna();
+    }
+}
+
+void niaga_kecil(){
+    float menu, bulanini, bulanlalu, tanggal;
+    int pilih;
+    int bpmu = 2000;
+    char nama[50];
+    char golongan[4] [6] = {"E1-1", "E1-2", "E1-3", "E1-4"};
+    char dayalistrik [4] [6]= {"450", "900", "1300", ">1300"};
+    int biayadministrasi = 5000;
+    int denda;
+    int biaya;
+    printf("\n\t~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+    printf("\n\t||           Silahkan pilih kategori anda          ||");
+    printf("\n\t~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+    printf("\n\tPelanggan yang memiliki bidang usaha");
+    printf("\n\tdi depan usahanya terdapat jalan berukuran");
+    printf("\n\t0-6.99 meter termasuk saluran got");
+    printf("\n\t~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+    printf("\n\t|| (0) Sumber daya listrik 450 VA                  ||");
+    printf("\n\t|| (1) Sumber daya listrik 900 VA                  ||");
+    printf("\n\t|| (2) Sumber daya listrik 1300 VA                 ||");
+    printf("\n\t|| (3) Sumber daya listrik >1300 VA                ||");
+    printf("\n\t~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+    printf("\n\t|| (4) Kembali ke golongan pengguna usaha          ||");
+    printf("\n\t~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+    printf("\n\tMasukkan sumber daya listrik yang anda gunakan : ");
+    while (scanf  ("%d", &pilih)==0 || pilih<0 || pilih>4){
+        printf ("\t---------------------------------------");
+        printf ("\n\tKarakter yang anda inputkan salah");
+        printf ("\n\tSilahkan inputkan ulang");
+        printf ("\n\t---------------------------------------");
+        printf("\n\tMasukkan sumber daya listrik yang anda gunakan : ");
+        while (pilih=getchar() != '\n');
+    }
+    if (pilih == 4){
+        close();
+        usaha();
+    }
+    close();
+
+    printf("\n\t~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+    printf("\n\t||                   Niaga Kecil                   ||");
+    printf("\n\t~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+    printf("\n\t~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+    printf("\n\t~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+    printf("\n\tMasukkan nama anda : ");
+    scanf("%[^\n]s", &nama);
+    printf("\n\tMasukkan tanggal pembayaran :  ");
+    while (scanf  ("%f", &tanggal)==0 || tanggal<1 || tanggal>31){
+        printf ("\t---------------------------------------");
+        printf ("\n\tKarakter yang anda inputkan salah");
+        printf ("\n\tSilahkan inputkan ulang");
+        printf ("\n\t---------------------------------------");
+        printf("\n\tMasukkan tanggal pembayaran :  ");
+        while (tanggal=getchar() != '\n');
+    }
+    printf("\n\tMasukkan pemakaian sebelumnya (m^3) :  ");
+    while (scanf  ("%f", &bulanlalu)==0){
+        printf ("\t---------------------------------------");
+        printf ("\n\tKarakter yang anda inputkan salah");
+        printf ("\n\tSilahkan inputkan ulang");
+        printf ("\n\t---------------------------------------");
+        printf("\n\tMasukkan pemakaian sebelumnya  (m^3)  :  ");
+        while (bulanlalu=getchar() != '\n');
+    }
+    printf("\n\tMasukkan pemakaian saat ini (m^3) :  ");
+    while (scanf  ("%f", &bulanini)==0 || bulanini<bulanlalu){
+        printf ("\t---------------------------------------");
+        printf ("\n\tKarakter yang anda inputkan salah");
+        printf ("\n\tSilahkan inputkan ulang");
+        printf ("\n\t---------------------------------------");
+        printf("\n\tMasukkan pemakaian sebelumnya  (m^3)  :  ");
+        while (bulanini=getchar() != '\n');
+    }
+
+    float pemakaian = bulanini - bulanlalu;
+    
+    if (pemakaian > 100 && tanggal > 15){
+        denda = 2000 * pemakaian;
+    }else if (pemakaian >= 10 && pemakaian <=100 && tanggal > 15){
+        denda = 1000 * pemakaian;
+    }else if (tanggal <= 15){
+        denda = 0;
+    }
+
+    close();
+
+    float biayapemakaian;
+    float tarifperkubik;
+    if (pemakaian >=0 && pemakaian <=10 && pilih==0){
+        biayapemakaian = administrasi + 2000 + (9200*pemakaian) + denda; 
+         tarifperkubik = (9200*pemakaian);
+    }else if (pemakaian >=11 && pemakaian<=20 && pilih==0){
+        biayapemakaian = administrasi + 2000 + (9850*pemakaian) + denda;
+         tarifperkubik = (9850*pemakaian);
+    }else if(pemakaian >20 && pilih==0){
+        biayapemakaian = administrasi + 2000 + (10950*pemakaian) + denda;
+         tarifperkubik = (10950*pemakaian);
+    }else if (pemakaian >=0 && pemakaian <=10 && pilih==1){
+        biayapemakaian = administrasi + 2000 + (9500*pemakaian) + denda; 
+         tarifperkubik = (9500*pemakaian);
+    }else if (pemakaian >=11 && pemakaian<=20 && pilih==1){
+        biayapemakaian = administrasi + 2000 + (10150*pemakaian) + denda;
+         tarifperkubik = (10150*pemakaian);
+    }else if(pemakaian >20 && pilih==1){
+        biayapemakaian = administrasi + 2000 + (11250*pemakaian) + denda;
+         tarifperkubik = (11250*pemakaian);
+    }else if (pemakaian >=0 && pemakaian <=10 && pilih==2){
+        biayapemakaian = administrasi + 2000 + (9800*pemakaian) + denda; 
+         tarifperkubik = (9800*pemakaian);
+    }else if (pemakaian >=11 && pemakaian<=20 && pilih==2){
+        biayapemakaian = administrasi + 2000 + (10450*pemakaian) + denda;
+         tarifperkubik = (10450*pemakaian);
+    }else if(pemakaian >20 && pilih==2){
+        biayapemakaian = administrasi + 2000 + (11850*pemakaian) + denda;
+         tarifperkubik = (11850*pemakaian);
+    }else if (pemakaian >=0 && pemakaian <=10 && pilih==3){
+        biayapemakaian = administrasi + 2000 + (10100*pemakaian) + denda; 
+         tarifperkubik = (10100*pemakaian);
+    }else if (pemakaian >=11 && pemakaian<=20 && pilih==3){
+        biayapemakaian = administrasi + 2000 + (10750*pemakaian) + denda;
+         tarifperkubik = (10750*pemakaian);
+    }else if(pemakaian >20 && pilih==3){
+        biayapemakaian = administrasi + 2000 + (11850*pemakaian) + denda;
+         tarifperkubik = (11850*pemakaian);
+    }
+
+        printf("\n\t~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+        printf("\n\t||                CV. KADITA WATER                 ||");
+        printf("\n\t~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+        printf("\n\t||           Air Jernih Gak Bikin Risih            ||");
+        printf("\n\t~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+        printf("\n\tGolongan Niaga Kecil : %s", golongan[pilih]);
+        printf("\n\t~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+        printf ("\n\tNama : %s", nama);
+        printf ("\n\tTanggal pembayaran : %.0f", tanggal);
+        printf ("\n\tSumber Daya Listrik Digunakan = %sVA", dayalistrik[pilih]);
+        printf("\n\tPemakaian anda bulan ini = %.0f (m^3)", pemakaian);
+        printf ("\n\tBiaya Administrasi      = Rp. %d", biayadministrasi);
+        printf ("\n\tBiaya BPM Usaha         = Rp. %d", bpmu);
+        printf ("\n\tBiaya denda             = Rp. %d", denda);
+        printf ("\n\tBiaya pemakaian air(m^3)= Rp. %.2f", tarifperkubik);
+        printf("\n\t~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+        printf ("\n\tjumlah tagihan anda : Rp %.2f", biayapemakaian);
+
+        int cetak;
+        printf("\n\t~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+        printf("\n\t||  Apakah anda ingin mencetak bukti pembayaran ?  ||");
+        printf("\n\t~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+        printf("\n\t|| (1) Iyaa                                        ||");
+        printf("\n\t|| (2) Tidak                                       ||");
+        printf("\n\t~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+        printf("\n\tMasukkan pilihan anda : ");
+        while (scanf  ("%d", &cetak)==0 || cetak<0 || cetak>2){
+        printf ("\t---------------------------------------");
+        printf ("\n\tKarakter yang anda inputkan salah");
+        printf ("\n\tSilahkan inputkan ulang");
+        printf ("\n\t---------------------------------------");
+        printf("\n\tMasukkan pilihan anda : ");
+        while (cetak=getchar() != '\n');
+    }
+        if (cetak==1){
+            cetakniagakecil(golongan , pilih, nama, tanggal, dayalistrik,pemakaian, biayadministrasi, bpmu, denda, tarifperkubik, biayapemakaian);
+            ulang();
+        }else if(cetak==2){
+            close();
+            ulang();
+        }
+}
+
+void niaga_sedang(){
+    float menu, bulanini, bulanlalu, tanggal;
+    int pilih;
+    int bpmu = 2000;
+    char nama[50];
+    char golongan[4] [6] = {"E2-1", "E2-2", "E2-3", "E2-4"};
+    char dayalistrik [4] [6]= {"450", "900", "1300", ">1300"};
+    int biayadministrasi = 5000;
+    int denda;
+    int biaya;
+    printf("\n\t~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+    printf("\n\t||           Silahkan pilih kategori anda          ||");
+    printf("\n\t~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+    printf("\n\tPelanggan yang memiliki bidang usaha");
+    printf("\n\tdi depan usahanya terdapat jalan berukuran");
+    printf("\n\t7-10 meter termasuk saluran got");
+    printf("\n\t~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+    printf("\n\t|| (0) Sumber daya listrik 450 VA                  ||");
+    printf("\n\t|| (1) Sumber daya listrik 900 VA                  ||");
+    printf("\n\t|| (2) Sumber daya listrik 1300 VA                 ||");
+    printf("\n\t|| (3) Sumber daya listrik >1300 VA                ||");
+    printf("\n\t~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+    printf("\n\t|| (4) Kembali ke golongan pengguna usaha          ||");
+    printf("\n\t~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+    printf("\n\tMasukkan sumber daya listrik yang anda gunakan : ");
+    while (scanf  ("%d", &pilih)==0 || pilih <0 || pilih >4){
+        printf ("\t---------------------------------------");
+        printf ("\n\tKarakter yang anda inputkan salah");
+        printf ("\n\tSilahkan inputkan ulang");
+        printf ("\n\t---------------------------------------");
+        printf("\n\tMasukkan sumber daya listrik yang anda gunakan : ");
+        while (pilih=getchar() != '\n');
+    }
+    if (pilih == 4){
+        close();
+        usaha();
+    }
+    close();
+
+    printf("\n\t~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+    printf("\n\t||                   Niaga Sedang                  ||");
+    printf("\n\t~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+    printf("\n\t~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+    printf("\n\t~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+    printf("\n\tMasukkan nama anda : ");
+    scanf("%[^\n]s", &nama);
+    printf("\n\tMasukkan tanggal pembayaran :  ");
+    while (scanf  ("%f", &tanggal)==0 || tanggal<1 || tanggal>31){
+        printf ("\t---------------------------------------");
+        printf ("\n\tKarakter yang anda inputkan salah");
+        printf ("\n\tSilahkan inputkan ulang");
+        printf ("\n\t---------------------------------------");
+        printf("\n\tMasukkan tanggal pembayaran :  ");
+        while (tanggal=getchar() != '\n');
+    }
+    printf("\n\tMasukkan pemakaian sebelumnya (m^3) :  ");
+    while (scanf  ("%f", &bulanlalu)==0){
+        printf ("\t---------------------------------------");
+        printf ("\n\tKarakter yang anda inputkan salah");
+        printf ("\n\tSilahkan inputkan ulang");
+        printf ("\n\t---------------------------------------");
+        printf("\n\tMasukkan pemakaian sebelumnya  (m^3)  :  ");
+        while (bulanlalu=getchar() != '\n');
+    }
+    printf("\n\tMasukkan pemakaian saat ini (m^3) :  ");
+    while (scanf  ("%f", &bulanini)==0 || bulanini<bulanlalu){
+        printf ("\t---------------------------------------");
+        printf ("\n\tKarakter yang anda inputkan salah");
+        printf ("\n\tSilahkan inputkan ulang");
+        printf ("\n\t---------------------------------------");
+        printf("\n\tMasukkan pemakaian sebelumnya  (m^3)  :  ");
+        while (bulanini=getchar() != '\n');
+    }
+
+    float pemakaian = bulanini - bulanlalu;
+
+    if (pemakaian > 100 && tanggal > 15){
+        denda = 2000 * pemakaian;
+    }else if (pemakaian >= 10 && pemakaian <=100 && tanggal > 15){
+        denda = 1000 * pemakaian;
+    }else if (tanggal <= 15){
+        denda = 0;
+    }
+    close();
+
+    float biayapemakaian;
+    float tarifperkubik;
+    if (pemakaian >=0 && pemakaian <=10 && pilih==1){
+        biayapemakaian = administrasi + 2000 + (10400*pemakaian) + denda;
+         tarifperkubik = (10400*pemakaian);
+    }else if (pemakaian >=11 && pemakaian<=20 && pilih==1){
+        biayapemakaian = administrasi + 2000 + (11050*pemakaian) + denda;
+         tarifperkubik = (11050*pemakaian);
+    }else if(pemakaian >20 && pilih==1){
+        biayapemakaian = administrasi + 2000 + (12150*pemakaian) + denda;
+         tarifperkubik = (12150*pemakaian);
+    }else if (pemakaian >=0 && pemakaian <=10 && pilih==2){
+        biayapemakaian = administrasi + 2000 + (10700*pemakaian) + denda;
+         tarifperkubik = (10700*pemakaian);
+    }else if (pemakaian >=11 && pemakaian<=20 && pilih==2){
+        biayapemakaian = administrasi + 2000 + (11350*pemakaian) + denda;
+         tarifperkubik = (11350*pemakaian);
+    }else if(pemakaian >20 && pilih==2){
+        biayapemakaian = administrasi + 2000 + (12550*pemakaian) + denda;
+         tarifperkubik = (12550*pemakaian);
+    }else if (pemakaian >=0 && pemakaian <=10 && pilih==3){
+        biayapemakaian = administrasi + 2000 + (11000*pemakaian) + denda;
+         tarifperkubik = (11000*pemakaian);
+    }else if (pemakaian >=11 && pemakaian<=20 && pilih==3){
+        biayapemakaian = administrasi + 2000 + (11650*pemakaian) + denda;
+         tarifperkubik = (11650*pemakaian);
+    }else if(pemakaian >20 && pilih==3){
+        biayapemakaian = administrasi + 2000 + (13150*pemakaian) + denda;
+         tarifperkubik = (13150*pemakaian);
+    }else if (pemakaian >=0 && pemakaian <=10 && pilih==4){
+        biayapemakaian = administrasi + 2000 + (11300*pemakaian) + denda;
+         tarifperkubik = (11300*pemakaian);
+    }else if (pemakaian >=11 && pemakaian<=20 && pilih==4){
+        biayapemakaian = administrasi + 2000 + (11950*pemakaian) + denda;
+         tarifperkubik = (11950*pemakaian);
+    }else if(pemakaian >20 && pilih==4){
+        biayapemakaian = administrasi + 2000 + (13950*pemakaian) + denda;
+         tarifperkubik = (13950*pemakaian);
+    }
+
+        printf("\n\t~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+        printf("\n\t||                CV. KADITA WATER                 ||");
+        printf("\n\t~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+        printf("\n\t||           Air Jernih Gak Bikin Risih            ||");
+        printf("\n\t~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+        printf("\n\tGolongan Niaga Sedang : %s", golongan[pilih]);
+        printf("\n\t~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+        printf ("\n\tNama : %s", nama);
+        printf ("\n\tTanggal pembayaran : %.0f", tanggal);
+        printf ("\n\tSumber Daya Listrik Digunakan = %sVA", dayalistrik[pilih]);
+        printf("\n\tPemakaian anda bulan ini = %.0f (m^3)", pemakaian);
+        printf ("\n\tBiaya Administrasi      = Rp. %d", biayadministrasi);
+        printf ("\n\tBiaya BPM Usaha         = Rp. %d", bpmu);
+        printf ("\n\tBiaya denda             = Rp. %d", denda);
+        printf ("\n\tBiaya pemakaian air(m^3)= Rp. %.2f", tarifperkubik);
+        printf("\n\t~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+        printf ("\n\tjumlah tagihan anda : Rp %.2f", biayapemakaian);
+
+        int cetak;
+        printf("\n\t~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+        printf("\n\t||  Apakah anda ingin mencetak bukti pembayaran ?  ||");
+        printf("\n\t~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+        printf("\n\t|| (1) Iyaa                                        ||");
+        printf("\n\t|| (2) Tidak                                       ||");
+        printf("\n\t~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+        printf("\n\tMasukkan pilihan anda : ");
+        while (scanf  ("%d", &cetak)==0 || cetak<0 || cetak>2){
+        printf ("\t---------------------------------------");
+        printf ("\n\tKarakter yang anda inputkan salah");
+        printf ("\n\tSilahkan inputkan ulang");
+        printf ("\n\t---------------------------------------");
+        printf("\n\tMasukkan pilihan anda : ");
+        while (cetak=getchar() != '\n');
+    }
+        if (cetak==1){
+            cetakniagasedang(golongan, pilih, nama, tanggal, dayalistrik,pemakaian, biayadministrasi, bpmu, denda, tarifperkubik, biayapemakaian);
+        }else if(cetak==2){
+            close();
+            ulang();
+        }
+
+}
+
+void niaga_besar(){
+    float menu, bulanini, bulanlalu, tanggal;
+    int pilih;
+    int bpmu = 2000;
+    char nama[50];
+    char golongan[4] [6] = {"E3-1", "E3-2", "E3-3", "E3-4"};
+    char dayalistrik [4] [6]= {"450", "900", "1300", ">1300"};
+    int biayadministrasi = 5000;
+    int denda;
+    int biaya;
+    printf("\n\t~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+    printf("\n\t||           Silahkan pilih kategori anda          ||");
+    printf("\n\t~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+    printf("\n\tPelanggan yang memiliki bidang usaha");
+    printf("\n\tdi depan usahanya terdapat jalan berukuran");
+    printf("\n\tdiatas 10 meter termasuk saluran got");
+    printf("\n\t~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+    printf("\n\t|| (0) Sumber daya listrik 450 VA                  ||");
+    printf("\n\t|| (1) Sumber daya listrik 900 VA                  ||");
+    printf("\n\t|| (2) Sumber daya listrik 1300 VA                 ||");
+    printf("\n\t|| (3) Sumber daya listrik >1300 VA                ||");
+    printf("\n\t~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+    printf("\n\t|| (4) Kembali ke golongan pengguna usaha          ||");
+    printf("\n\t~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+    printf("\n\tMasukkan sumber daya listrik yang anda gunakan : ");
+    while (scanf  ("%d", &pilih)==0 || pilih<0 || pilih>4){
+        printf ("\t---------------------------------------");
+        printf ("\n\tKarakter yang anda inputkan salah");
+        printf ("\n\tSilahkan inputkan ulang");
+        printf ("\n\t---------------------------------------");
+        printf("\n\tMasukkan sumber daya listrik yang anda gunakan : ");
+        while (pilih=getchar() != '\n');
+    }
+    if (pilih == 4){
+        close();
+        usaha();
+    }
+    close();
+
+    printf("\n\t~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+    printf("\n\t||                   Niaga Besar                   ||");
+    printf("\n\t~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+    printf("\n\t~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+    printf("\n\t~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+    printf("\n\tMasukkan nama anda : ");
+    scanf("%[^\n]s", &nama);
+    printf("\n\tMasukkan tanggal pembayaran :  ");
+    while (scanf  ("%f", &tanggal)==0 || tanggal<1 || tanggal>31){
+        printf ("\t---------------------------------------");
+        printf ("\n\tKarakter yang anda inputkan salah");
+        printf ("\n\tSilahkan inputkan ulang");
+        printf ("\n\t---------------------------------------");
+        printf("\n\tMasukkan tanggal pembayaran :  ");
+        while (tanggal=getchar() != '\n');
+    }
+    printf("\n\tMasukkan pemakaian sebelumnya (m^3) :  ");
+    while (scanf  ("%f", &bulanlalu)==0){
+        printf ("\t---------------------------------------");
+        printf ("\n\tKarakter yang anda inputkan salah");
+        printf ("\n\tSilahkan inputkan ulang");
+        printf ("\n\t---------------------------------------");
+        printf("\n\tMasukkan pemakaian sebelumnya  (m^3)  :  ");
+        while (bulanlalu=getchar() != '\n');
+    }
+    printf("\n\tMasukkan pemakaian saat ini (m^3) :  ");
+    while (scanf  ("%f", &bulanini)==0 || bulanini<bulanlalu){
+        printf ("\t---------------------------------------");
+        printf ("\n\tKarakter yang anda inputkan salah");
+        printf ("\n\tSilahkan inputkan ulang");
+        printf ("\n\t---------------------------------------");
+        printf("\n\tMasukkan pemakaian sebelumnya  (m^3)  :  ");
+        while (bulanini=getchar() != '\n');
+    }
+
+    float pemakaian = bulanini - bulanlalu;
+
+    if (pemakaian > 100 && tanggal > 15){
+        denda = 2000 * pemakaian;
+    }else if (pemakaian >= 10 && pemakaian <=100 && tanggal > 15){
+        denda = 1000 * pemakaian;
+    }else if (tanggal <= 15){
+        denda = 0;
+    }
+    close();
+
+    float biayapemakaian;
+    float tarifperkubik;
+    if (pemakaian >=0 && pemakaian <=10 && pilih==0){
+        biayapemakaian = administrasi + 2000 + (11600*pemakaian) + denda; 
+         tarifperkubik = (11600*pemakaian);
+    }else if (pemakaian >=11 && pemakaian<=20 && pilih==0){
+        biayapemakaian = administrasi + 2000 + (12250*pemakaian) + denda;
+         tarifperkubik = (12250*pemakaian);
+    }else if(pemakaian >20 && pilih==0){
+        biayapemakaian = administrasi + 2000 + (14750*pemakaian) + denda;
+         tarifperkubik = (14750*pemakaian);
+    }else if (pemakaian >=0 && pemakaian <=10 && pilih==1){
+        biayapemakaian = administrasi + 2000 + (11900*pemakaian) + denda; 
+         tarifperkubik = (11900*pemakaian);
+    }else if (pemakaian >=11 && pemakaian<=20 && pilih==1){
+        biayapemakaian = administrasi + 2000 + (12550*pemakaian) + denda;
+         tarifperkubik = (12550*pemakaian);
+    }else if(pemakaian >20 && pilih==1){
+        biayapemakaian = administrasi + 2000 + (15050*pemakaian) + denda;
+         tarifperkubik = (15050*pemakaian);
+    }else if (pemakaian >=0 && pemakaian <=10 && pilih==2){
+        biayapemakaian = administrasi + 2000 + (12200*pemakaian) + denda; 
+         tarifperkubik = (12200*pemakaian);
+    }else if (pemakaian >=11 && pemakaian<=20 && pilih==2){
+        biayapemakaian = administrasi + 2000 + (12850*pemakaian) + denda;
+         tarifperkubik = (12850*pemakaian);
+    }else if(pemakaian >20 && pilih==2){
+        biayapemakaian = administrasi + 2000 + (15850*pemakaian) + denda;
+         tarifperkubik = (15850*pemakaian);
+    }else if (pemakaian >=0 && pemakaian <=10 && pilih==3){
+        biayapemakaian = administrasi + 2000 + (12500*pemakaian) + denda; 
+         tarifperkubik = (12500*pemakaian);
+    }else if (pemakaian >=11 && pemakaian<=20 && pilih==3){
+        biayapemakaian = administrasi + 2000 + (13150*pemakaian) + denda;
+         tarifperkubik = (13150*pemakaian);
+    }else if(pemakaian >20 && pilih==3){
+        biayapemakaian = administrasi + 2000 + (16650*pemakaian) + denda;
+         tarifperkubik = (16650*pemakaian);
+    }
+
+
+        printf("\n\t~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+        printf("\n\t||                CV. KADITA WATER                 ||");
+        printf("\n\t~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+        printf("\n\t||           Air Jernih Gak Bikin Risih            ||");
+        printf("\n\t~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+        printf("\n\tGolongan Niaga Besar : %s", golongan[pilih]);
+        printf("\n\t~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+        printf ("\n\tNama : %s", nama);
+        printf ("\n\tTanggal pembayaran : %.0f", tanggal);
+        printf ("\n\tSumber Daya Listrik Digunakan = %sVA", dayalistrik[pilih]);
+        printf("\n\tPemakaian anda bulan ini = %.0f (m^3)", pemakaian);
+        printf ("\n\tBiaya Administrasi      = Rp. %d", biayadministrasi);
+        printf ("\n\tBiaya BPM Usaha         = Rp. %d", bpmu);
+        printf ("\n\tBiaya denda             = Rp. %d", denda);
+        printf ("\n\tBiaya pemakaian air(m^3)= Rp. %.2f", tarifperkubik);
+        printf("\n\t~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+        printf ("\n\tjumlah tagihan anda : Rp %.2f", biayapemakaian);
+
+        int cetak;
+        printf("\n\t~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+        printf("\n\t||  Apakah anda ingin mencetak bukti pembayaran ?  ||");
+        printf("\n\t~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+        printf("\n\t|| (1) Iyaa                                        ||");
+        printf("\n\t|| (2) Tidak                                       ||");
+        printf("\n\t~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+        printf("\n\tMasukkan pilihan anda : ");
+        while (scanf  ("%d", &cetak)==0 || cetak<0 || cetak>2){
+        printf ("\t---------------------------------------");
+        printf ("\n\tKarakter yang anda inputkan salah");
+        printf ("\n\tSilahkan inputkan ulang");
+        printf ("\n\t---------------------------------------");
+        printf("\n\tMasukkan pilihan anda : ");
+        while (cetak=getchar() != '\n');
+    }
+        if (cetak==1){
+            cetakniagabesar(golongan, pilih, nama, tanggal, dayalistrik,pemakaian, biayadministrasi, bpmu, denda, tarifperkubik, biayapemakaian);
+        }else if(cetak==2){
+            close();
+            ulang();
+        }
+}
+
+void rumahtangga(){
+    int menu;
+    printf("\n\t~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+    printf("\n\t||               Golongan Rumah Tangga             ||");
+    printf("\n\t~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+    printf("\n\t~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+    printf("\n\t|| (1) Non Niaga Bersubsidi                        ||");
+    printf("\n\t|| (2) Non Niaga Tanpa Bersubsidi                  ||");
+    printf("\n\t|| (3) Non Niaga Memiliki Usaha                    ||");
+    printf("\n\t~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+    printf("\n\t~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+    printf("\n\t|| (0) Kembali ke golongan pengguna                ||");
+    printf("\n\t~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+    printf("\n\tMasukkan golongan Pengguna :  ");
+    while (scanf  ("%d", &menu)==0 || menu<0 || menu>3){
+        printf ("\t---------------------------------------");
+        printf ("\n\tKarakter yang anda inputkan salah");
+        printf ("\n\tSilahkan inputkan ulang");
+        printf ("\n\t---------------------------------------");
+        printf("\n\tMasukkan golongan Pengguna :  ");
+        while (menu=getchar() != '\n');
+    }
+    close();
+
+    if (menu==1){
+        non_niaga_bersubsidi();
+    }else if (menu==2){
+        non_niaga_tanpa_bersubsidi();
+    }else if(menu == 3){
+        rumah_tangga_b();
+    }else if(menu == 0){
+        golonganpengguna();
+    }
+}
+
+void non_niaga_bersubsidi(){
+    float menu, bulanini, bulanlalu, tanggal;
+    int pilihukuranjalan;
+    int pilihdayalistrik;
+    int bpmrt = 1000;
+    char nama[50];
+    int dayalistrik [2]= {450, 900};
+    int biayadministrasi = 5000;
+    int denda;
+    int biaya;
+    printf("\n\t~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+    printf("\n\t||           Silahkan pilih kategori anda          ||");
+    printf("\n\t~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+    printf("\n\tPelanggan di depan rumahnya terdapat jalan berukuran");
+    printf("\n\tsesuai pilihan termasuk saluran got");
+    printf("\n\t~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+    printf("\n\t|| [0] (0-3.99) meter                              ||");
+    printf("\n\t|| [1] (4-6.99) meter                              ||");
+    printf("\n\t|| [2] (7-10.0) meter                              ||");
+    printf("\n\t|| [3] (>10) meter                                 ||");
+    printf("\n\t~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+    printf("\n\t|| (4) Kembali ke golongan pengguna rumah tangga   ||");
+    printf("\n\t~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+    printf("\n\tMasukkan lebar jalan yang anda gunakan : ");
+    while(scanf("%d", &pilihukuranjalan) == 0 || pilihukuranjalan<0 || pilihukuranjalan>4){
+        printf("\n\tKarakter yang anda inputkan salah");
+        printf("\n\tSilahkan inputkan ulang");
+        printf("\n\t~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+        printf("\n\tMasukkan lebar jalan yang anda gunakan : ");
+        while(pilihukuranjalan=getchar() != '\n');
+    }
+    if (pilihukuranjalan==4){
+        rumahtangga();
+    }
+    close();
+
+    printf("\n\t~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+    printf("\n\t||           Silahkan pilih kategori anda          ||");
+    printf("\n\t~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+    printf("\n\t|| (0) Sumber daya listrik 450 VA                  ||");
+    printf("\n\t|| (1) Sumber daya listrik 900 VA                  ||");
+    printf("\n\t~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+    printf("\n\t|| (2) Kembali ke golongan pengguna rumah tangga   ||");
+    printf("\n\t~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+    printf("\n\tMasukkan sumber daya listrik yang anda gunakan : ");
+    while (scanf  ("%d", &pilihdayalistrik)==0 || pilihdayalistrik<0 || pilihdayalistrik>2){
+        printf ("\t---------------------------------------");
+        printf ("\n\tKarakter yang anda inputkan salah");
+        printf ("\n\tSilahkan inputkan ulang");
+        printf ("\n\t---------------------------------------");
+        printf("\n\tMasukkan sumber daya listrik yang anda gunakan : ");
+        while (pilihdayalistrik=getchar() != '\n');
+    }
+    if (pilihdayalistrik == 2){
+        close();
+        rumahtangga();
+    }
+    close();
+
+    printf("\n\t~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+    printf("\n\t||              Non Niaga Bersubsidi               ||");
+    printf("\n\t~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+    printf("\n\t~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+    printf("\n\t~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+    printf("\n\tMasukkan nama anda : ");
+    scanf("%[^\n]s", &nama);
+    printf("\n\tMasukkan tanggal pembayaran :  ");
+    while (scanf  ("%f", &tanggal)==0 || tanggal<1 || tanggal>31){
+        printf ("\t---------------------------------------");
+        printf ("\n\tKarakter yang anda inputkan salah");
+        printf ("\n\tSilahkan inputkan ulang");
+        printf ("\n\t---------------------------------------");
+        printf("\n\tMasukkan tanggal pembayaran :  ");
+        while (tanggal=getchar() != '\n');
+    }
+    printf("\n\tMasukkan pemakaian sebelumnya (m^3) :  ");
+    while (scanf  ("%f", &bulanlalu)==0){
+        printf ("\t---------------------------------------");
+        printf ("\n\tKarakter yang anda inputkan salah");
+        printf ("\n\tSilahkan inputkan ulang");
+        printf ("\n\t---------------------------------------");
+        printf("\n\tMasukkan pemakaian sebelumnya  (m^3)  :  ");
+        while (bulanlalu=getchar() != '\n');
+    }
+    printf("\n\tMasukkan pemakaian saat ini (m^3) :  ");
+    while (scanf  ("%f", &bulanini)==0 || bulanini<bulanlalu){
+        printf ("\t---------------------------------------");
+        printf ("\n\tKarakter yang anda inputkan salah");
+        printf ("\n\tSilahkan inputkan ulang");
+        printf ("\n\t---------------------------------------");
+        printf("\n\tMasukkan pemakaian sebelumnya  (m^3)  :  ");
+        while (bulanini=getchar() != '\n');
+    }
+
+    float pemakaian = bulanini - bulanlalu;
+
+    if (pemakaian > 100 && tanggal > 15){
+        denda = 2000 * pemakaian;
+    }else if (pemakaian >= 10 && pemakaian <=100 && tanggal > 15){
+        denda = 1000 * pemakaian;
+    }else if (tanggal <= 15){
+        denda = 0;
+    }
+
+    close();
+
+    float biayapemakaian;
+    float tarifperkubik;
+    if (pemakaian >=0 && pemakaian <=10 && pilihukuranjalan==0 && pilihdayalistrik==0){
+        biayapemakaian = administrasi + 1000 + (1780*pemakaian) + denda; 
+         tarifperkubik = (1780*pemakaian);
+    }else if (pemakaian >=11 && pemakaian<=20 && pilihukuranjalan==0 && pilihdayalistrik==0){
+        biayapemakaian = administrasi + 1000 + (2060*pemakaian) + denda;
+         tarifperkubik = (2060*pemakaian);
+    }else if(pemakaian >20 && pilihukuranjalan==0 && pilihdayalistrik==0){
+        biayapemakaian = administrasi + 1000 + (5880*pemakaian) + denda;
+         tarifperkubik = (5880*pemakaian);
+    }else if (pemakaian >=0 && pemakaian <=10 && pilihukuranjalan==0 && pilihdayalistrik==1){
+        biayapemakaian = administrasi + 1000 + (2060*pemakaian) + denda; 
+         tarifperkubik = (2060*pemakaian);
+    }else if (pemakaian >=11 && pemakaian<=20 && pilihukuranjalan==0 && pilihdayalistrik==1){
+        biayapemakaian = administrasi + 1000 + (2340*pemakaian) + denda;
+         tarifperkubik = (2340*pemakaian);
+    }else if(pemakaian >20 && pilihukuranjalan==0 && pilihdayalistrik==1){
+        biayapemakaian = administrasi + 1000 + (5940*pemakaian) + denda;
+         tarifperkubik = (5940*pemakaian);
+    }else if (pemakaian >=0 && pemakaian <=10 && pilihukuranjalan==1 && pilihdayalistrik==0){
+        biayapemakaian = administrasi + 1000 + (2340*pemakaian) + denda; 
+         tarifperkubik = (2340*pemakaian);
+    }else if (pemakaian >=11 && pemakaian<=20 && pilihukuranjalan==1 && pilihdayalistrik==0){
+        biayapemakaian = administrasi + 1000 + (2620*pemakaian) + denda;
+         tarifperkubik = (2620*pemakaian);
+    }else if(pemakaian >20 && pilihukuranjalan==1 && pilihdayalistrik==0){
+        biayapemakaian = administrasi + 1000 + (6000*pemakaian) + denda;
+         tarifperkubik = (6000*pemakaian);
+    }else if (pemakaian >=0 && pemakaian <=10 && pilihukuranjalan==1 && pilihdayalistrik==1){
+        biayapemakaian = administrasi + 1000 + (2620*pemakaian) + denda; 
+         tarifperkubik = (2620*pemakaian);
+    }else if (pemakaian >=11 && pemakaian<=20 && pilihukuranjalan==1 && pilihdayalistrik==1){
+        biayapemakaian = administrasi + 1000 + (2900*pemakaian) + denda;
+         tarifperkubik = (2900*pemakaian);
+    }else if(pemakaian >20 && pilihukuranjalan==1 && pilihdayalistrik==1){
+        biayapemakaian = administrasi + 1000 + (6060*pemakaian) + denda;
+         tarifperkubik = (6060*pemakaian);
+    }else if (pemakaian >=0 && pemakaian <=10 && pilihukuranjalan==2 && pilihdayalistrik==0){
+        biayapemakaian = administrasi + 1000 + (2900*pemakaian) + denda; 
+         tarifperkubik = (2900*pemakaian);
+    }else if (pemakaian >=11 && pemakaian<=20 && pilihukuranjalan==2 && pilihdayalistrik==0){
+        biayapemakaian = administrasi + 1000 + (3180*pemakaian) + denda;
+         tarifperkubik = (3180*pemakaian);
+    }else if(pemakaian >20 && pilihukuranjalan==2 && pilihdayalistrik==0){
+        biayapemakaian = administrasi + 1000 + (6120*pemakaian) + denda;
+         tarifperkubik = (6120*pemakaian);
+    }else if (pemakaian >=0 && pemakaian <=10 && pilihukuranjalan==2 && pilihdayalistrik==1){
+        biayapemakaian = administrasi + 1000 + (3180*pemakaian) + denda; 
+         tarifperkubik = (3180*pemakaian);
+    }else if (pemakaian >=11 && pemakaian<=20 && pilihukuranjalan==2 && pilihdayalistrik==1){
+        biayapemakaian = administrasi + 1000 + (3460*pemakaian) + denda;
+         tarifperkubik = (3460*pemakaian);
+    }else if(pemakaian >20 && pilihukuranjalan==2 && pilihdayalistrik==1){
+        biayapemakaian = administrasi + 1000 + (6180*pemakaian) + denda;
+         tarifperkubik = (6180*pemakaian);
+    }else if (pemakaian >=0 && pemakaian <=10 && pilihukuranjalan==3 && pilihdayalistrik==0){
+        biayapemakaian = administrasi + 1000 + (3460*pemakaian) + denda; 
+         tarifperkubik = (3460*pemakaian);
+    }else if (pemakaian >=11 && pemakaian<=20 && pilihukuranjalan==3 && pilihdayalistrik==0){
+        biayapemakaian = administrasi + 1000 + (3740*pemakaian) + denda;
+         tarifperkubik = (3740*pemakaian);
+    }else if(pemakaian >20 && pilihukuranjalan==3 && pilihdayalistrik==0){
+        biayapemakaian = administrasi + 1000 + (6240*pemakaian) + denda;
+         tarifperkubik = (6240*pemakaian);
+    }else if (pemakaian >=0 && pemakaian <=10 && pilihukuranjalan==3 && pilihdayalistrik==1){
+        biayapemakaian = administrasi + 1000 + (3740*pemakaian) + denda; 
+         tarifperkubik = (3740*pemakaian);
+    }else if (pemakaian >=11 && pemakaian<=20 && pilihukuranjalan==3 && pilihdayalistrik==1){
+        biayapemakaian = administrasi + 1000 + (4020*pemakaian) + denda;
+         tarifperkubik = (4020*pemakaian);
+    }else if(pemakaian >20 && pilihukuranjalan==3 && pilihdayalistrik==1){
+        biayapemakaian = administrasi + 1000 + (6300*pemakaian) + denda;
+         tarifperkubik = (6300*pemakaian);    
+    }
+
+        printf("\n\t~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+        printf("\n\t||                CV. KADITA WATER                 ||");
+        printf("\n\t~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+        printf("\n\t||           Air Jernih Gak Bikin Risih            ||");
+        printf("\n\t~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+        printf("\n\tGolongan Non Niaga Bersubsidi : D%d-%d", pilihukuranjalan + 1, pilihdayalistrik + 1);
+        printf("\n\t~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+        printf ("\n\tNama : %s", nama);
+        printf ("\n\tTanggal pembayaran : %.0f", tanggal);
+        printf ("\n\tSumber Daya Listrik Digunakan = %dVA", dayalistrik[pilihdayalistrik]);
+        printf("\n\tPemakaian anda bulan ini = %.0f (m^3)", pemakaian);
+        printf ("\n\tBiaya Administrasi      = Rp. %d", biayadministrasi);
+        printf ("\n\tBiaya BPM Rumah Tangga  = Rp. %d", bpmrt);
+        printf ("\n\tBiaya denda             = Rp. %d", denda);
+        printf ("\n\tBiaya pemakaian air(m^3)= Rp. %.2f", tarifperkubik);
+        printf("\n\t~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+        printf ("\n\tjumlah tagihan anda : Rp %.2f", biayapemakaian);
+
+        int cetak;
+        printf("\n\t~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+        printf("\n\t||  Apakah anda ingin mencetak bukti pembayaran ?  ||");
+        printf("\n\t~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+        printf("\n\t|| (1) Iyaa                                        ||");
+        printf("\n\t|| (2) Tidak                                       ||");
+        printf("\n\t~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+        printf("\n\tMasukkan pilihan anda : ");
+        while (scanf  ("%d", &cetak)==0 || cetak<0 || cetak>2){
+        printf ("\t---------------------------------------");
+        printf ("\n\tKarakter yang anda inputkan salah");
+        printf ("\n\tSilahkan inputkan ulang");
+        printf ("\n\t---------------------------------------");
+        printf("\n\tMasukkan pilihan anda : ");
+        while (cetak=getchar() != '\n');
+    }
+        if (cetak==1){
+            cetaknonniagabersubsidi(pilihukuranjalan, pilihdayalistrik, nama, tanggal, dayalistrik, pemakaian, biayadministrasi, bpmrt, denda, tarifperkubik, biayapemakaian );
+        }else if(cetak==2){
+            close();
+            ulang();
+        }
+
+}
+
+void non_niaga_tanpa_bersubsidi(){
+    float menu, bulanini, bulanlalu, tanggal;
+    int pilihukuranjalan;
+    int pilihdayalistrik;
+    int bpmrt = 1000;
+    char nama[50];
+    char dayalistrik [2] [6]= {"1300", ">1300"};
+    int biayadministrasi = 5000;
+    int denda;
+    int biaya;
+    printf("\n\t~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+    printf("\n\t||           Silahkan pilih kategori anda          ||");
+    printf("\n\t~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+    printf("\n\tPelanggan di depan rumahnya terdapat jalan berukuran");
+    printf("\n\tsesuai pilihan termasuk saluran got");
+    printf("\n\t~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+    printf("\n\t|| [0] (0-3.99) meter                              ||");
+    printf("\n\t|| [1] (4-6.99) meter                              ||");
+    printf("\n\t|| [2] (7-10.0) meter                              ||");
+    printf("\n\t|| [3] (>10) meter                                 ||");
+    printf("\n\t~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+    printf("\n\t|| (4) Kembali ke golongan pengguna rumah tangga   ||");
+    printf("\n\t~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+    printf("\n\tMasukkan lebar jalan yang anda gunakan : ");
+    while(scanf("%d", &pilihukuranjalan) == 0 || pilihukuranjalan<0 || pilihukuranjalan>4){
+        printf("\n\tKarakter yang anda inputkan salah");
+        printf("\n\tSilahkan inputkan ulang");
+        printf("\n\t~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+        printf("\n\tMasukkan lebar jalan yang anda gunakan : ");
+        while(pilihukuranjalan=getchar() != '\n');
+    }
+    if (pilihukuranjalan==4){
+        close();
+        rumahtangga();
+    }
+    close();
+
+    printf("\n\t~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+    printf("\n\t||           Silahkan pilih kategori anda          ||");
+    printf("\n\t~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+    printf("\n\t|| (0) Sumber daya listrik 1300 VA                 ||");
+    printf("\n\t|| (1) Sumber daya listrik >1300 VA                ||");
+    printf("\n\t~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+    printf("\n\t|| (2) Kembali ke golongan pengguna rumah tangga   ||");
+    printf("\n\t~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+    printf("\n\tMasukkan sumber daya listrik yang anda gunakan : ");
+    while (scanf  ("%d", &pilihdayalistrik)==0 || pilihdayalistrik<0 || pilihdayalistrik>2){
+        printf ("\t---------------------------------------");
+        printf ("\n\tKarakter yang anda inputkan salah");
+        printf ("\n\tSilahkan inputkan ulang");
+        printf ("\n\t---------------------------------------");
+        printf("\n\tMasukkan sumber daya listrik yang anda gunakan : ");
+        while (pilihdayalistrik=getchar() != '\n');
+    }
+    if (pilihdayalistrik == 2){
+        close();
+        rumahtangga();
+    }
+    close();
+
+    printf("\n\t~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+    printf("\n\t||           Non Niaga Tanpa Bersubsidi            ||");
+    printf("\n\t~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+    printf("\n\t~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+    printf("\n\t~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+    printf("\n\tMasukkan nama anda : ");
+    scanf("%[^\n]s", &nama);
+    printf("\n\tMasukkan tanggal pembayaran :  ");
+    while (scanf  ("%f", &tanggal)==0 || tanggal<1 || tanggal>31){
+        printf ("\t---------------------------------------");
+        printf ("\n\tKarakter yang anda inputkan salah");
+        printf ("\n\tSilahkan inputkan ulang");
+        printf ("\n\t---------------------------------------");
+        printf("\n\tMasukkan tanggal pembayaran :  ");
+        while (tanggal=getchar() != '\n');
+    }
+    printf("\n\tMasukkan pemakaian sebelumnya (m^3) :  ");
+    while (scanf  ("%f", &bulanlalu)==0){
+        printf ("\t---------------------------------------");
+        printf ("\n\tKarakter yang anda inputkan salah");
+        printf ("\n\tSilahkan inputkan ulang");
+        printf ("\n\t---------------------------------------");
+        printf("\n\tMasukkan pemakaian sebelumnya  (m^3)  :  ");
+        while (bulanlalu=getchar() != '\n');
+    }
+    printf("\n\tMasukkan pemakaian saat ini (m^3) :  ");
+    while (scanf  ("%f", &bulanini)==0 || bulanini<bulanlalu){
+        printf ("\t---------------------------------------");
+        printf ("\n\tKarakter yang anda inputkan salah");
+        printf ("\n\tSilahkan inputkan ulang");
+        printf ("\n\t---------------------------------------");
+        printf("\n\tMasukkan pemakaian sebelumnya  (m^3)  :  ");
+        while (bulanini=getchar() != '\n');
+    }
+
+    float pemakaian = bulanini - bulanlalu;
+
+     if (pemakaian > 100 && tanggal > 15){
+        denda = 2000 * pemakaian;
+    }else if (pemakaian >= 10 && pemakaian <=100 && tanggal > 15){
+        denda = 1000 * pemakaian;
+    }else if (tanggal <= 15){
+        denda = 0;
+    }
+
+    close();
+
+    float biayapemakaian;
+    float tarifperkubik;
+    if (pemakaian >=0 && pemakaian <=10 && pilihukuranjalan==0 && pilihdayalistrik==0){
+        biayapemakaian = administrasi + 1000 + (6340*pemakaian) + denda;
+         tarifperkubik = (6340*pemakaian);
+    }else if (pemakaian >=11 && pemakaian<=20 && pilihukuranjalan==0 && pilihdayalistrik==0){
+        biayapemakaian = administrasi + 1000 + (9200*pemakaian) + denda;
+         tarifperkubik = (9200*pemakaian);
+    }else if(pemakaian >20 && pilihukuranjalan==0 && pilihdayalistrik==0){
+        biayapemakaian = administrasi + 1000 + (9600*pemakaian) + denda;
+         tarifperkubik = (9600*pemakaian);
+    }else if (pemakaian >=0 && pemakaian <=10 && pilihukuranjalan==0 && pilihdayalistrik==1){
+        biayapemakaian = administrasi + 1000 + (6420*pemakaian) + denda;
+         tarifperkubik = (6420*pemakaian);
+    }else if (pemakaian >=11 && pemakaian<=20 && pilihukuranjalan==0 && pilihdayalistrik==1){
+        biayapemakaian = administrasi + 1000 + (9350*pemakaian) + denda;
+         tarifperkubik = (9350*pemakaian);
+    }else if(pemakaian >20 && pilihukuranjalan==0 && pilihdayalistrik==1){
+        biayapemakaian = administrasi + 1000 + (9650*pemakaian) + denda;
+         tarifperkubik = (9650*pemakaian);
+    }else if (pemakaian >=0 && pemakaian <=10 && pilihukuranjalan==1 && pilihdayalistrik==0){
+        biayapemakaian = administrasi + 1000 + (6490*pemakaian) + denda;
+         tarifperkubik = (6490*pemakaian);
+    }else if (pemakaian >=11 && pemakaian<=20 && pilihukuranjalan==1 && pilihdayalistrik==0){
+        biayapemakaian = administrasi + 1000 + (9500*pemakaian) + denda;
+         tarifperkubik = (9500*pemakaian);
+    }else if(pemakaian >20 && pilihukuranjalan==1 && pilihdayalistrik==0){
+        biayapemakaian = administrasi + 1000 + (9800*pemakaian) + denda;
+         tarifperkubik = (9800*pemakaian);
+    }else if (pemakaian >=0 && pemakaian <=10 && pilihukuranjalan==1 && pilihdayalistrik==1){
+        biayapemakaian = administrasi + 1000 + (6570*pemakaian) + denda;
+         tarifperkubik = (6570*pemakaian);
+    }else if (pemakaian >=11 && pemakaian<=20 && pilihukuranjalan==1 && pilihdayalistrik==1){
+        biayapemakaian = administrasi + 1000 + (9650*pemakaian) + denda;
+         tarifperkubik = (9650*pemakaian);
+    }else if(pemakaian >20 && pilihukuranjalan==1 && pilihdayalistrik==1){
+        biayapemakaian = administrasi + 1000 + (9950*pemakaian) + denda;
+         tarifperkubik = (9950*pemakaian);
+    }else if (pemakaian >=0 && pemakaian <=10 && pilihukuranjalan==2 && pilihdayalistrik==0){
+        biayapemakaian = administrasi + 1000 + (6640*pemakaian) + denda;
+         tarifperkubik = (6640*pemakaian);
+    }else if (pemakaian >=11 && pemakaian<=20 && pilihukuranjalan==2 && pilihdayalistrik==0){
+        biayapemakaian = administrasi + 1000 + (9800*pemakaian) + denda;
+         tarifperkubik = (9800*pemakaian);
+    }else if(pemakaian >20 && pilihukuranjalan==2 && pilihdayalistrik==0){
+        biayapemakaian = administrasi + 1000 + (10100*pemakaian) + denda;
+         tarifperkubik = (10100*pemakaian);
+    }else if (pemakaian >=0 && pemakaian <=10 && pilihukuranjalan==2 && pilihdayalistrik==1){
+        biayapemakaian = administrasi + 1000 + (6720*pemakaian) + denda;
+         tarifperkubik = (6720*pemakaian);
+    }else if (pemakaian >=11 && pemakaian<=20 && pilihukuranjalan==2 && pilihdayalistrik==1){
+        biayapemakaian = administrasi + 1000 + (9950*pemakaian) + denda;
+         tarifperkubik = (9950*pemakaian);
+    }else if(pemakaian >20 && pilihukuranjalan==2 && pilihdayalistrik==1){
+        biayapemakaian = administrasi + 1000 + (10250*pemakaian) + denda;
+         tarifperkubik = (10250*pemakaian);
+    }else if (pemakaian >=0 && pemakaian <=10 && pilihukuranjalan==3 && pilihdayalistrik==0){
+        biayapemakaian = administrasi + 1000 + (6790*pemakaian) + denda;
+         tarifperkubik = (6790*pemakaian);
+    }else if (pemakaian >=11 && pemakaian<=20 && pilihukuranjalan==3 && pilihdayalistrik==0){
+        biayapemakaian = administrasi + 1000 + (10100*pemakaian) + denda;
+         tarifperkubik = (10100*pemakaian);
+    }else if(pemakaian >20 && pilihukuranjalan==3 && pilihdayalistrik==0){
+        biayapemakaian = administrasi + 1000 + (10400*pemakaian) + denda;
+         tarifperkubik = (10400*pemakaian);
+    }else if (pemakaian >=0 && pemakaian <=10 && pilihukuranjalan==3 && pilihdayalistrik==1){
+        biayapemakaian = administrasi + 1000 + (6870*pemakaian) + denda;
+         tarifperkubik = (6870*pemakaian);
+    }else if (pemakaian >=11 && pemakaian<=20 && pilihukuranjalan==3 && pilihdayalistrik==1){
+        biayapemakaian = administrasi + 1000 + (10250*pemakaian) + denda;
+         tarifperkubik = (10250*pemakaian);
+    }else if(pemakaian >20 && pilihukuranjalan==3 && pilihdayalistrik==1){
+        biayapemakaian = administrasi + 1000 + (10550*pemakaian) + denda;
+         tarifperkubik = (10400*pemakaian);
+    }
+
+        printf("\n\t~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+        printf("\n\t||                CV. KADITA WATER                 ||");
+        printf("\n\t~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+        printf("\n\t||           Air Jernih Gak Bikin Risih            ||");
+        printf("\n\t~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+        printf("\n\tGolongan Non Niaga Tanpa Bersubsidi : D%d-%d", pilihukuranjalan + 1, pilihdayalistrik + 3);
+        printf("\n\t~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+        printf ("\n\tNama : %s", nama);
+        printf ("\n\tTanggal pembayaran : %.0f", tanggal);
+        printf ("\n\tSumber Daya Listrik Digunakan = %sVA", dayalistrik[pilihdayalistrik]);
+        printf("\n\tPemakaian anda bulan ini = %.0f (m^3)", pemakaian);
+        printf ("\n\tBiaya Administrasi      = Rp. %d", biayadministrasi);
+        printf ("\n\tBiaya BPM Rumah Tangga  = Rp. %d", bpmrt);
+        printf ("\n\tBiaya denda             = Rp. %d", denda);
+        printf ("\n\tBiaya pemakaian air(m^3)= Rp. %.2f", tarifperkubik);
+        printf("\n\t~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+        printf ("\n\tjumlah tagihan anda : Rp %.2f", biayapemakaian);
+
+        int cetak;
+        printf("\n\t~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+        printf("\n\t||  Apakah anda ingin mencetak bukti pembayaran ?  ||");
+        printf("\n\t~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+        printf("\n\t|| (1) Iyaa                                        ||");
+        printf("\n\t|| (2) Tidak                                       ||");
+        printf("\n\t~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+        printf("\n\tMasukkan pilihan anda : ");
+        while (scanf  ("%d", &cetak)==0 || cetak<0 || cetak>2){
+        printf ("\t---------------------------------------");
+        printf ("\n\tKarakter yang anda inputkan salah");
+        printf ("\n\tSilahkan inputkan ulang");
+        printf ("\n\t---------------------------------------");
+        printf("\n\tMasukkan pilihan anda : ");
+        while (cetak=getchar() != '\n');
+    }
+        if (cetak==1){
+            cetaknonniagatanpabersubsidi(pilihukuranjalan, pilihdayalistrik, nama, tanggal, dayalistrik, pemakaian, biayadministrasi, bpmrt, denda, tarifperkubik, biayapemakaian);
+        }else if(cetak==2){
+            close();
+            ulang();
+        }
+}
+
+void rumah_tangga_b(){
+    float menu, bulanini, bulanlalu, tanggal;
+    int pilihdayalistrik;
+    int bpmrt = 1000;
+    char nama[50];
+    char dayalistrik [4] [6]= {"450", "900", "1300", ">1300"};
+    int biayadministrasi = 5000;
+    int denda;
+    int biaya;
+    printf("\n\t~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+    printf("\n\t||           Silahkan pilih kategori anda          ||");
+    printf("\n\t~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+    printf("\n\tPelanggan di rumahnya terdapat usaha");
+    printf("\n\tsesuai pilihan daya listrik dibawah");
+    printf("\n\t~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+    printf("\n\t|| (0) Sumber daya listrik 450 VA                  ||");
+    printf("\n\t|| (1) Sumber daya listrik 900 VA                  ||");
+    printf("\n\t|| (2) Sumber daya listrik 1300 VA                 ||");
+    printf("\n\t|| (3) Sumber daya listrik >1300 VA                ||");
+    printf("\n\t~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+    printf("\n\t|| (4) Kembali ke golongan pengguna usaha          ||");
+    printf("\n\t~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+    printf("\n\tMasukkan sesuai pilihan anda : ");
+    while (scanf  ("%d", &pilihdayalistrik)==0 || pilihdayalistrik<0 || pilihdayalistrik>4){
+        printf ("\t---------------------------------------");
+        printf ("\n\tKarakter yang anda inputkan salah");
+        printf ("\n\tSilahkan inputkan ulang");
+        printf ("\n\t---------------------------------------");
+        printf("\n\tMasukkan sesuai pilihan anda : ");
+        while (pilihdayalistrik=getchar() != '\n');
+    }
+    if (pilihdayalistrik==4){
+        close();
+        rumahtangga();
+    }
+    close();
+
+    printf("\n\t~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+    printf("\n\t||           Non Niaga Tanpa Bersubsidi            ||");
+    printf("\n\t~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+    printf("\n\t~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+    printf("\n\t~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+    printf("\n\tMasukkan nama anda : ");
+    scanf("%[^\n]s", &nama);
+    printf("\n\tMasukkan tanggal pembayaran :  ");
+    while (scanf  ("%f", &tanggal)==0 || tanggal<1 || tanggal>31){
+        printf ("\t---------------------------------------");
+        printf ("\n\tKarakter yang anda inputkan salah");
+        printf ("\n\tSilahkan inputkan ulang");
+        printf ("\n\t---------------------------------------");
+        printf("\n\tMasukkan tanggal pembayaran :  ");
+        while (tanggal=getchar() != '\n');
+    }
+    printf("\n\tMasukkan pemakaian sebelumnya (m^3) :  ");
+    while (scanf  ("%f", &bulanlalu)==0){
+        printf ("\t---------------------------------------");
+        printf ("\n\tKarakter yang anda inputkan salah");
+        printf ("\n\tSilahkan inputkan ulang");
+        printf ("\n\t---------------------------------------");
+        printf("\n\tMasukkan pemakaian sebelumnya  (m^3)  :  ");
+        while (bulanlalu=getchar() != '\n');
+    }
+    printf("\n\tMasukkan pemakaian saat ini (m^3) :  ");
+    while (scanf  ("%f", &bulanini)==0 || bulanini<bulanlalu){
+        printf ("\t---------------------------------------");
+        printf ("\n\tKarakter yang anda inputkan salah");
+        printf ("\n\tSilahkan inputkan ulang");
+        printf ("\n\t---------------------------------------");
+        printf("\n\tMasukkan pemakaian sebelumnya  (m^3)  :  ");
+        while (bulanini=getchar() != '\n');
+    }
+
+    float pemakaian = bulanini - bulanlalu;
+
+     if (pemakaian > 100 && tanggal > 15){
+        denda = 2000 * pemakaian;
+    }else if (pemakaian >= 10 && pemakaian <=100 && tanggal > 15){
+        denda = 1000 * pemakaian;
+    }else if (tanggal <= 15){
+        denda = 0;
+    }
+
+    close();
+
+    float biayapemakaian;
+    float tarifperkubik;
+    if(pemakaian >=0 && pemakaian <=10 && pilihdayalistrik==0){
+        biayapemakaian = administrasi + 1000 + (6940*pemakaian) + denda; 
+         tarifperkubik = (6940*pemakaian);
+    }else if (pemakaian >=11 && pemakaian<=20 && pilihdayalistrik==0){
+        biayapemakaian = administrasi + 1000 + (10400*pemakaian) + denda;
+         tarifperkubik = (10400*pemakaian);
+    }else if(pemakaian >20 && pilihdayalistrik==0){
+        biayapemakaian = administrasi + 1000 + (10700*pemakaian) + denda;
+         tarifperkubik = (10700*pemakaian);
+    }else if (pemakaian >=0 && pemakaian <=10 && pilihdayalistrik==1){
+        biayapemakaian = administrasi + 1000 + (7020*pemakaian) + denda; 
+         tarifperkubik = (7020*pemakaian);
+    }else if (pemakaian >=11 && pemakaian<=20 && pilihdayalistrik==1){
+        biayapemakaian = administrasi + 1000 + (10550*pemakaian) + denda;
+         tarifperkubik = (10550*pemakaian);
+    }else if(pemakaian >20 && pilihdayalistrik==1){
+        biayapemakaian = administrasi + 1000 + (10850*pemakaian) + denda;
+         tarifperkubik = (10850*pemakaian);
+    }else if (pemakaian >=0 && pemakaian <=10 && pilihdayalistrik==2){
+        biayapemakaian = administrasi + 1000 + (7090*pemakaian) + denda; 
+         tarifperkubik = (7090*pemakaian);
+    }else if (pemakaian >=2 && pemakaian<=20 && pilihdayalistrik==2){
+        biayapemakaian = administrasi + 1000 + (10700*pemakaian) + denda;
+         tarifperkubik = (10700*pemakaian);
+    }else if(pemakaian >20 && pilihdayalistrik==2){
+        biayapemakaian = administrasi + 1000 + (11000*pemakaian) + denda;
+         tarifperkubik = (11000*pemakaian);
+    }else if (pemakaian >=0 && pemakaian <=10 && pilihdayalistrik==3){
+        biayapemakaian = administrasi + 1000 + (7170*pemakaian) + denda; 
+         tarifperkubik = (7170*pemakaian);
+    }else if (pemakaian >=11 && pemakaian<=20 && pilihdayalistrik==3){
+        biayapemakaian = administrasi + 1000 + (10850*pemakaian) + denda;
+         tarifperkubik = (10850*pemakaian);
+    }else if(pemakaian >20 && pilihdayalistrik==3){
+        biayapemakaian = administrasi + 1000 + (11150*pemakaian) + denda;
+         tarifperkubik = (11150*pemakaian);
+    }
+
+        printf("\n\t~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+        printf("\n\t||                CV. KADITA WATER                 ||");
+        printf("\n\t~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+        printf("\n\t||           Air Jernih Gak Bikin Risih            ||");
+        printf("\n\t~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+        printf("\n\tGolongan Non Niaga Tanpa Bersubsidi : D5-%d", pilihdayalistrik + 1);
+        printf("\n\t~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+        printf ("\n\tNama : %s", nama);
+        printf ("\n\tTanggal pembayaran : %.0f", tanggal);
+        printf ("\n\tSumber Daya Listrik Digunakan = %sVA", dayalistrik[pilihdayalistrik]);
+        printf("\n\tPemakaian anda bulan ini = %.0f (m^3)", pemakaian);
+        printf ("\n\tBiaya Administrasi      = Rp. %d", biayadministrasi);
+        printf ("\n\tBiaya BPM Rumah Tangga  = Rp. %d", bpmrt);
+        printf ("\n\tBiaya denda             = Rp. %d", denda);
+        printf ("\n\tBiaya pemakaian air(m^3)= Rp. %.2f", tarifperkubik);
+        printf("\n\t~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+        printf ("\n\tjumlah tagihan anda : Rp %.2f", biayapemakaian);
+
+        int cetak;
+        printf("\n\t~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+        printf("\n\t||  Apakah anda ingin mencetak bukti pembayaran ?  ||");
+        printf("\n\t~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+        printf("\n\t|| (1) Iyaa                                        ||");
+        printf("\n\t|| (2) Tidak                                       ||");
+        printf("\n\t~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+        printf("\n\tMasukkan pilihan anda : ");
+        while (scanf  ("%d", &cetak)==0 || cetak<0 || cetak>2){
+        printf ("\t---------------------------------------");
+        printf ("\n\tKarakter yang anda inputkan salah");
+        printf ("\n\tSilahkan inputkan ulang");
+        printf ("\n\t---------------------------------------");
+        printf("\n\tMasukkan pilihan anda : ");
+        while (cetak=getchar() != '\n');
+    }
+        if (cetak==1){
+            cetakrumahtanggab(pilihdayalistrik, nama, tanggal, dayalistrik, pemakaian, biayadministrasi, bpmrt, denda, tarifperkubik, pemakaian);
+        }else if(cetak==2){
+            close();
+            ulang();
+        }
+}
+
+void cetaknonniagabersubsidi(int pilihukuranjalan, int pilihdayalistrik, char nama[50], float tanggal, int dayalistrik[2], float pemakaian, int biayadministrasi, int bpmrt, int denda, float tarifperkubik, float biayapemakaian ){
+    //menulis file ke txt
+     //membuat pointer
+    FILE *fptr;
+
+    //membuka file
+    fptr = fopen("rekeningair2.txt", "w");
+
+    if (fptr==NULL){
+        printf ("\n\tFile tidak ditemukan");
+        exit(0);
+    }
+
+        fprintf(fptr, "\n\t~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+        fprintf(fptr, "\n\t||                CV. KADITA WATER                 ||");
+        fprintf(fptr, "\n\t~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+        fprintf(fptr, "\n\t||           Air Jernih Gak Bikin Risih            ||");
+        fprintf(fptr, "\n\t~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+        fprintf(fptr, "\n\tGolongan Non Niaga Bersubsidi : D%d-%d", pilihukuranjalan + 1, pilihdayalistrik + 1);
+        fprintf(fptr, "\n\t~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+        fprintf (fptr, "\n\tNama : %s", nama);
+        fprintf (fptr, "\n\tTanggal pembayaran : %.0f", tanggal);
+        fprintf (fptr, "\n\tSumber Daya Listrik Digunakan = %dVA", dayalistrik[pilihdayalistrik]);
+        fprintf(fptr, "\n\tPemakaian anda bulan ini = %.0f (m^3)", pemakaian);
+        fprintf (fptr, "\n\tBiaya Administrasi      = Rp. %d", biayadministrasi);
+        fprintf (fptr, "\n\tBiaya BPM Rumah Tangga  = Rp. %d", bpmrt);
+        fprintf (fptr, "\n\tBiaya denda             = Rp. %d", denda);
+        fprintf (fptr, "\n\tBiaya pemakaian air(m^3)= Rp. %.2f", tarifperkubik);
+        fprintf(fptr, "\n\t~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+        fprintf (fptr, "\n\tjumlah tagihan anda : Rp %.2f", biayapemakaian);
+
+        fclose(fptr);//tutup file
+
+        printf("\n\tPembayaran telah berhasil dicetak!!!\n");
+        ulang();
+}
+
+void cetaknonniagatanpabersubsidi(int pilihukuranjalan, int pilihdayalistrik, char nama[50], float tanggal, char dayalistrik[2] [6], float pemakaian, int biayadministrasi, int bpmrt, int denda, float tarifperkubik, float biayapemakaian){
+     //menulis file ke txt
+     //membuat pointer
+    FILE *fptr;
+
+    //membuka file
+    fptr = fopen("rekeningair2.txt", "w");
+
+    if (fptr==NULL){
+        printf ("\n\tFile tidak ditemukan");
+        exit(0);
+    }
+
+        fprintf(fptr, "\n\t~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+        fprintf(fptr, "\n\t||                CV. KADITA WATER                 ||");
+        fprintf(fptr, "\n\t~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+        fprintf(fptr, "\n\t||           Air Jernih Gak Bikin Risih            ||");
+        fprintf(fptr, "\n\t~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+        fprintf(fptr, "\n\tGolongan Non Niaga Tanpa Bersubsidi : D%d-%d", pilihukuranjalan + 1, pilihdayalistrik + 3);
+        fprintf(fptr, "\n\t~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+        fprintf (fptr, "\n\tNama : %s", nama);
+        fprintf (fptr, "\n\tTanggal pembayaran : %.0f", tanggal);
+        fprintf (fptr, "\n\tSumber Daya Listrik Digunakan = %sVA", dayalistrik[pilihdayalistrik]);
+        fprintf(fptr, "\n\tPemakaian anda bulan ini = %.0f (m^3)", pemakaian);
+        fprintf (fptr, "\n\tBiaya Administrasi      = Rp. %d", biayadministrasi);
+        fprintf (fptr, "\n\tBiaya BPM Rumah Tangga  = Rp. %d", bpmrt);
+        fprintf (fptr, "\n\tBiaya denda             = Rp. %d", denda);
+        fprintf (fptr, "\n\tBiaya pemakaian air(m^3)= Rp. %.2f", tarifperkubik);
+        fprintf(fptr, "\n\t~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+        fprintf (fptr, "\n\tjumlah tagihan anda : Rp %.2f", biayapemakaian);
+
+        fclose(fptr);//tutup file
+
+        printf("\n\tPembayaran telah berhasil dicetak!!!\n");
+        ulang();
+}
+
+void cetakrumahtanggab(int pilihdayalistrik, char nama[50], float tanggal, char dayalistrik[4] [6], float pemakaian, int biayadministrasi, int bpmrt, int denda, float tarifperkubik, float biayapemakaian){
+    //menulis file ke txt
+     //membuat pointer
+    FILE *fptr;
+
+    //membuka file
+    fptr = fopen("rekeningair2.txt", "w");
+
+    if (fptr==NULL){
+        printf ("\n\tFile tidak ditemukan");
+        exit(0);
+    }
+
+        fprintf(fptr, "\n\t~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+        fprintf(fptr, "\n\t||                CV. KADITA WATER                 ||");
+        fprintf(fptr, "\n\t~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+        fprintf(fptr, "\n\t||           Air Jernih Gak Bikin Risih            ||");
+        fprintf(fptr, "\n\t~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+        fprintf(fptr, "\n\tGolongan Non Niaga Tanpa Bersubsidi : D5-%d", pilihdayalistrik + 1);
+        fprintf(fptr, "\n\t~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+        fprintf (fptr, "\n\tNama : %s", nama);
+        fprintf (fptr, "\n\tTanggal pembayaran : %.0f", tanggal);
+        fprintf (fptr, "\n\tSumber Daya Listrik Digunakan = %sVA", dayalistrik[pilihdayalistrik]);
+        fprintf(fptr, "\n\tPemakaian anda bulan ini = %.0f (m^3)", pemakaian);
+        fprintf (fptr, "\n\tBiaya Administrasi      = Rp. %d", biayadministrasi);
+        fprintf (fptr, "\n\tBiaya BPM Rumah Tangga  = Rp. %d", bpmrt);
+        fprintf (fptr, "\n\tBiaya denda             = Rp. %d", denda);
+        fprintf (fptr, "\n\tBiaya pemakaian air(m^3)= Rp. %.2f", tarifperkubik);
+        fprintf(fptr, "\n\t~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+        fprintf (fptr, "\n\tjumlah tagihan anda : Rp %.2f", biayapemakaian);
+
+        fclose(fptr);//tutup file
+
+        printf("\n\tPembayaran telah berhasil dicetak!!!\n");
+        ulang();
+}
+
+void cetakniagakecil(char golongan [4] [6], int pilih, char nama[50], float tanggal, char dayalistrik[4] [6],float pemakaian, int biayadministrasi, int bpmu, int denda, float tarifperkubik, float biayapemakaian){
+    //menulis file ke txt
+     //membuat pointer
+    FILE *fptr;
+
+    //membuka file
+    fptr = fopen("rekeningair2.txt", "w");
+
+    if (fptr==NULL){
+        printf ("\n\tFile tidak ditemukan");
+        exit(0);
+    }
+
+        fprintf(fptr, "\n\t~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+        fprintf(fptr, "\n\t||                CV. KADITA WATER                 ||");
+        fprintf(fptr, "\n\t~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+        fprintf(fptr, "\n\t||           Air Jernih Gak Bikin Risih            ||");
+        fprintf(fptr, "\n\t~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+        fprintf(fptr, "\n\tGolongan Niaga Kecil : %s", golongan[pilih]);
+        fprintf(fptr, "\n\t~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+        fprintf (fptr, "\n\tNama : %s", nama);
+        fprintf (fptr, "\n\tTanggal pembayaran : %.0f", tanggal);
+        fprintf (fptr, "\n\tSumber Daya Listrik Digunakan = %sVA", dayalistrik[pilih]);
+        fprintf(fptr, "\n\tPemakaian anda bulan ini = %.0f (m^3)", pemakaian);
+        fprintf (fptr, "\n\tBiaya Administrasi      = Rp. %d", biayadministrasi);
+        fprintf (fptr, "\n\tBiaya BPM Usaha         = Rp. %d", bpmu);
+        fprintf (fptr, "\n\tBiaya denda             = Rp. %d", denda);
+        fprintf (fptr, "\n\tBiaya pemakaian air(m^3)= Rp. %.2f", tarifperkubik);
+        fprintf(fptr, "\n\t~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+        fprintf (fptr, "\n\tjumlah tagihan anda : Rp %.2f", biayapemakaian);
+
+        fclose(fptr);//tutup file
+
+        printf("\n\tPembayaran telah berhasil dicetak!!!\n");
+        ulang();
+}
+
+void cetakniagasedang(char golongan [4] [6], int pilih, char nama[50], float tanggal, char dayalistrik[4] [6],float pemakaian, int biayadministrasi, int bpmu, int denda, float tarifperkubik, float biayapemakaian){
+    //menulis file ke txt
+     //membuat pointer
+    FILE *fptr;
+
+    //membuka file
+    fptr = fopen("rekeningair2.txt", "w");
+
+    if (fptr==NULL){
+        printf ("\n\tFile tidak ditemukan");
+        exit(0);
+    }
+
+        fprintf(fptr, "\n\t~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+        fprintf(fptr, "\n\t||                CV. KADITA WATER                 ||");
+        fprintf(fptr, "\n\t~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+        fprintf(fptr, "\n\t||           Air Jernih Gak Bikin Risih            ||");
+        fprintf(fptr, "\n\t~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+        fprintf(fptr, "\n\tGolongan Niaga Kecil : %s", golongan[pilih]);
+        fprintf(fptr, "\n\t~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+        fprintf (fptr, "\n\tNama : %s", nama);
+        fprintf (fptr, "\n\tTanggal pembayaran : %.0f", tanggal);
+        fprintf (fptr, "\n\tSumber Daya Listrik Digunakan = %sVA", dayalistrik[pilih]);
+        fprintf(fptr, "\n\tPemakaian anda bulan ini = %.0f (m^3)", pemakaian);
+        fprintf (fptr, "\n\tBiaya Administrasi      = Rp. %d", biayadministrasi);
+        fprintf (fptr, "\n\tBiaya BPM Usaha         = Rp. %d", bpmu);
+        fprintf (fptr, "\n\tBiaya denda             = Rp. %d", denda);
+        fprintf (fptr, "\n\tBiaya pemakaian air(m^3)= Rp. %.2f", tarifperkubik);
+        fprintf(fptr, "\n\t~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+        fprintf (fptr, "\n\tjumlah tagihan anda : Rp %.2f", biayapemakaian);
+
+        fclose(fptr);//tutup file
+
+        printf("\n\tPembayaran telah berhasil dicetak!!!\n");
+        ulang();
+}
+
+void cetakniagabesar(char golongan [4] [6], int pilih, char nama[50], float tanggal, char dayalistrik[4] [6],float pemakaian, int biayadministrasi, int bpmu, int denda, float tarifperkubik, float biayapemakaian){
+    //menulis file ke txt
+     //membuat pointer
+    FILE *fptr;
+
+    //membuka file
+    fptr = fopen("rekeningair2.txt", "w");
+
+    if (fptr==NULL){
+        printf ("\n\tFile tidak ditemukan");
+        exit(0);
+    }
+
+        fprintf(fptr, "\n\t~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+        fprintf(fptr, "\n\t||                CV. KADITA WATER                 ||");
+        fprintf(fptr, "\n\t~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+        fprintf(fptr, "\n\t||           Air Jernih Gak Bikin Risih            ||");
+        fprintf(fptr, "\n\t~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+        fprintf(fptr, "\n\tGolongan Niaga Kecil : %s", golongan[pilih]);
+        fprintf(fptr, "\n\t~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+        fprintf (fptr, "\n\tNama : %s", nama);
+        fprintf (fptr, "\n\tTanggal pembayaran : %.0f", tanggal);
+        fprintf (fptr, "\n\tSumber Daya Listrik Digunakan = %sVA", dayalistrik[pilih]);
+        fprintf(fptr, "\n\tPemakaian anda bulan ini = %.0f (m^3)", pemakaian);
+        fprintf (fptr, "\n\tBiaya Administrasi      = Rp. %d", biayadministrasi);
+        fprintf (fptr, "\n\tBiaya BPM Usaha         = Rp. %d", bpmu);
+        fprintf (fptr, "\n\tBiaya denda             = Rp. %d", denda);
+        fprintf (fptr, "\n\tBiaya pemakaian air(m^3)= Rp. %.2f", tarifperkubik);
+        fprintf(fptr, "\n\t~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+        fprintf (fptr, "\n\tjumlah tagihan anda : Rp %.2f", biayapemakaian);
+
+        fclose(fptr);//tutup file
+
+        printf("\n\tPembayaran telah berhasil dicetak!!!\n");
+        ulang();
+}
+
+void golonganpengguna(){
+    int menu;
+    printf("\n\t~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+    printf("\n\t||                Golongan Pengguna                ||");
+    printf("\n\t~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+    printf("\n\t~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+    printf("\n\t|| (1) Rumah Tangga                                ||");
+    printf("\n\t|| (2) Usaha                                       ||");
+    printf("\n\t~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+    printf("\n\tMasukkan golongan Pengguna :  ");
+    while (scanf  ("%d", &menu)==0 || menu<1 || menu>2){
+        printf ("\t---------------------------------------");
+        printf ("\n\tKarakter yang anda inputkan salah");
+        printf ("\n\tSilahkan inputkan ulang");
+        printf ("\n\t---------------------------------------");
+        printf("\n\tMasukkan golongan Pengguna :  ");
+        while (menu=getchar() != '\n');
+    }
+    close();
+
+    if (menu==1){
+        rumahtangga();
+    }else if (menu==2){
+        usaha();
+    }
+}
+
+int main(){
+    mulai();
+    close();
+    printf("\n\t~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+    printf("\n\t||                CV. KADITA WATER                 ||");
+    printf("\n\t~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+    printf("\n\t||           Air Jernih Gak Bikin Risih            ||");
+    printf("\n\t~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+    printf("\n\t~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+    golonganpengguna();
+    return 0;
+}
