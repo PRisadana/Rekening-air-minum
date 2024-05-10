@@ -1,2 +1,2 @@
 # Rekening-air-minum
-menghitung jumlah tagihan rekening air minum sesuai golongan pengguna
+Program menghitung jumlah tagihan rekening air minum sesuai golongan pengguna menggunakan bahasa pemrograman C
